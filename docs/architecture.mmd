@@ -1,0 +1,40 @@
+flowchart LR
+  %% PROPOSED / ILLUSTRATIVE ONLY — replace with verified lab components.
+  subgraph People[People and lifecycle]
+    User[User or administrator]
+    Event[Approved joiner / mover / leaver event]
+    Gov[Provisioning and role governance]
+  end
+
+  subgraph Local[Local environment, if in scope]
+    Dir[Authoritative or local directory]
+    LocalApp[On-premises resource]
+  end
+
+  Bridge[Identity bridge<br/>sync and/or federation]
+
+  subgraph Cloud[Cloud identity and access]
+    IdP[Cloud identity provider]
+    Policy[Authentication and access policy<br/>factor + context + risk]
+    CloudApp[Cloud application / resource]
+  end
+
+  Logs[Central audit and monitoring]
+
+  Event --> Gov
+  Gov --> Dir
+  Dir <-->|Scoped attributes / assertions| Bridge
+  Bridge <-->|Identity / federation data| IdP
+  User -->|Sign-in request| IdP
+  IdP --> Policy
+  Policy -->|Allowed session / assertion| CloudApp
+  Dir -->|Directory authentication / authorization| LocalApp
+  Gov -.->|Provisioning and admin events| Logs
+  Dir -.->|Identity changes and access events| Logs
+  Bridge -.->|Sync / federation events| Logs
+  IdP -.->|Sign-in and policy decisions| Logs
+  CloudApp -.->|Resource activity| Logs
+
+  classDef recommended fill:#f4f6f8,stroke:#475569,color:#111827;
+  class User,Event,Gov,Dir,LocalApp,Bridge,IdP,Policy,CloudApp,Logs recommended;
+
