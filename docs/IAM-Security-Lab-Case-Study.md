@@ -1,259 +1,235 @@
 ---
-title: Hybrid IAM Security Lab — Case Study
+title: Hybrid IAM Security Lab — Microsoft Entra Conditional Access Case Study
 project: Hybrid IAM Security Lab
-status: Evidence-limited portfolio case study
+status: Evidence-based lab documentation; enforcement gaps remain
 reviewed: 2026-10-28
 tags:
   - cybersecurity
   - iam
+  - microsoft-entra
+  - conditional-access
   - portfolio
-  - identity-security
 ---
 
-# Hybrid IAM Security Lab — Case Study
+# Hybrid IAM Security Lab — Microsoft Entra Conditional Access
 
-> [!important] Evidence boundary
-> The owner describes this as a completed IAM project. In the material available for this review, the linked GitHub repository is empty and the named Obsidian vault folder, screenshots, configurations, and test records were not available. This document does not present a suggested design as a deployed system. See the [Evidence Register](Evidence-Register.md) for what was checked and what evidence would close the gaps.
+> [!important] Scope and evidence
+> This revision uses the Obsidian project note, its linked group and legacy-authentication notes, and the embedded screenshots. The screenshots show Security Defaults disabled, an MFA Conditional Access policy created in Report-only, an emergency-access exclusion group, and a legacy-auth policy still in its creation form without a block grant control. The material does **not** show an enforced replacement baseline, sign-in test results, or the on-premises/hybrid identity connection implied by the project title.
 
 ## 1. Executive Summary
 
-The **Hybrid IAM Security Lab** is an owner-described identity and access management portfolio project. Its title indicates a hybrid IAM focus, but no directory, identity provider, cloud platform, configuration, or test evidence was available to confirm the implementation. The public repository exists, but the repository contents endpoint reported that it is empty at the time of review.
+The **Hybrid IAM Security Lab** demonstrates Microsoft Entra ID administration and Conditional Access configuration. The available notes and screenshots substantiate an emergency-access account procedure, a security group named `CA-Exclude-EmergencyAccess`, a created MFA policy named `CA-01-Require-MFA-Admins`, and a draft policy intended to block legacy authentication.
 
-This case study frames the business problem, target controls, and validation approach expected of a hybrid IAM lab. It is suitable as a documentation foundation; the actual platform names, build sequence, screenshots, results, and measured outcomes must be added from the project evidence before the case study is presented as a record of implementation.
+The strongest confirmed control outcome is configuration work, not enforced protection: the MFA policy is explicitly **Report-only**, and the legacy-authentication policy screenshot is a draft with **zero grant controls selected** and the Create button still present. A separate screenshot shows Security Defaults **Disabled**. The evidence therefore does not establish that users are currently required to perform MFA or that legacy authentication is blocked.
 
-**Portfolio objective (inferred from the project name and owner brief):** demonstrate the ability to reason about identities that need controlled access across on-premises and cloud resources. This is an interpretation of the project scope, not a confirmed description of its built components.
+The screenshots also show a scope mismatch that needs resolution: the MFA policy name says “Admins,” while the captured assignment summary says all users are included. The note text says to select administrative directory roles. Verify the saved policy scope before enabling it.
 
-**Expected value of the target design:** clearer identity lifecycle ownership, consistent authentication and authorization controls, reduced standing privilege, and better auditability. These are desired outcomes, not measured results from this lab.
+The project name contains “Hybrid,” but the reviewed notes do not show on-premises Active Directory, Microsoft Entra Connect/Cloud Sync, federation, or another hybrid identity bridge. The architecture below describes the evidenced Entra policy setup and marks that integration as unverified.
 
 ## 2. Project Background
 
-### Organization context
+### Lab context
 
-No real organization or environment details were supplied. For a portfolio narrative, use this clearly simulated context only if it matches the actual lab:
+The Obsidian note documents a Microsoft Entra tenant and Conditional Access work. The screenshots contain a tenant display name and administrator/contact identifiers; those values are intentionally omitted from this public case study. The note does not say whether the tenant is a disposable lab or a live organization, so this document does not make that assumption.
 
-> A small organization operates a mix of local and cloud-hosted services. Staff and administrators need access based on job responsibility, while identity changes and departures must result in timely access changes across both environments.
+### Security objectives reflected in the notes
 
-### Security challenges the lab can address
+- Preserve emergency administrative access if normal administrator sign-in is unavailable.
+- Use a controlled group to identify emergency accounts for Conditional Access exclusions.
+- Require MFA through a Conditional Access policy.
+- Block legacy authentication clients that cannot satisfy modern authentication requirements.
+- Avoid lockout by starting policies in Report-only and reviewing their impact before enforcement.
 
-These are common hybrid identity risks and portfolio design goals, not confirmed incidents or findings in this project:
+The first three have some configuration evidence; the MFA policy is not enforced. Legacy-authentication blocking remains a draft in the available capture. No end-to-end sign-in validation was supplied.
 
-- Separate identity stores can create inconsistent account lifecycle and access decisions.
-- Broad groups or long-lived administrator access can grant more privilege than a task requires.
-- Password-only or inconsistent authentication controls can make account compromise easier.
-- Delayed disablement or incomplete session revocation can leave access after a person changes roles or leaves.
-- Logs split across systems can make investigation and access review difficult.
+### Requirements and current evidence
 
-### Reference requirements
-
-| ID | Requirement for a defensible lab | Evidence to add |
-|---|---|---|
-| IAM-R1 | Identify the authoritative source for each user and administrator identity. | Design note or identity flow configuration. |
-| IAM-R2 | Define joiner, mover, and leaver actions, including access removal. | Runbook plus before/after account and group evidence. |
-| IAM-R3 | Grant access through named roles/groups with least privilege. | Role/group matrix and representative membership evidence. |
-| IAM-R4 | Require strong authentication proportionate to account and resource risk. | Sanitized policy configuration and positive/negative sign-in results. |
-| IAM-R5 | Keep privileged administration separate, limited, and auditable. | Admin role assignments, elevation procedure, and audit records. |
-| IAM-R6 | Record identity and access events in a reviewable location. | Sanitized event samples, retention setting, and alert/review process. |
-| IAM-R7 | Test allowed and denied access, including lifecycle changes and failure cases. | Dated test matrix with actual observed outcomes. |
-
-### Governance and compliance considerations
-
-Map controls to a named framework only when the lab objective requires it, and describe the result as a learning exercise rather than a compliance assessment. A control mapping is not proof of compliance. For authentication and federation design, use the current NIST SP 800-63 Revision 4 suite as a reference; NIST SP 800-207 is a useful resource-centric architecture reference for zero-trust principles. See [Further reading](#references-and-further-reading).
+| Requirement | Evidence-based status |
+|---|---|
+| Emergency access accounts can recover tenant administration. | The note describes two cloud-only accounts; one screenshot shows one account with an active, direct, permanent Global Administrator assignment. The second account, cloud-only status, authentication methods, and successful sign-in tests are not evidenced. |
+| Emergency identities are separately managed for policy exclusions. | A Security group using Assigned membership was created. The creation screen showed two members selected; the final roster was not displayed. |
+| MFA policy covers the intended population and resources. | A policy was created in Report-only; a setup screenshot shows all resources and an MFA grant. Captured user scope appears to include all users, despite the “Admins” name and note instructions. Verify the saved assignment. |
+| Legacy authentication is blocked. | Not evidenced. A new policy draft selected legacy client types but showed zero grant controls and no creation confirmation. |
+| The tenant has a secure baseline while moving from Security Defaults. | Security Defaults are Disabled. The reviewed screenshots do not show equivalent Conditional Access controls in an enforced state. |
+| Hybrid directory integration is configured. | Not evidenced in the reviewed notes or captures. |
 
 ## 3. Solution Overview
 
-### Confirmed implementation
+### Confirmed technologies and objects
 
-No technologies, services, identity stores, integrations, roles, policies, or provisioning workflows could be confirmed from the available repository or workspace materials. Do not name a vendor or protocol as implemented until a configuration, screenshot, or test trace supports that claim.
+- **Microsoft Entra ID** — admin-center pages and Entra directory objects are visible in the screenshots.
+- **Conditional Access** — an MFA policy was created and another policy was being configured.
+- **Security Defaults** — the captured tenant setting is Disabled.
+- **Emergency-access group** — `CA-Exclude-EmergencyAccess`, Security type, Assigned membership.
+- **Emergency administrator role** — one captured emergency account has a direct, active, permanent Global Administrator role assignment.
 
-### Logical solution concept
+No license details, on-premises directory, synchronization service, federation protocol, authentication-method registration, or monitoring destination were provided.
 
-The proposed reference design in [architecture.svg](architecture.svg) separates identity lifecycle management, a local identity domain (if used), an identity bridge, cloud authentication and policy, target resources, and centralized audit evidence. It is technology-neutral and should be replaced or relabeled to match the actual lab.
+### Lifecycle and access model
 
-| Capability | Target behavior | Current evidence status |
-|---|---|---|
-| Identity lifecycle | Create, update, disable, and remove access in response to approved identity changes. | Unknown / not provided |
-| Authentication | Authenticate users and administrators using risk-appropriate factors and policy. | Unknown / not provided |
-| Authorization | Assign access through scoped roles or groups and check it at the resource. | Unknown / not provided |
-| Hybrid connectivity | Define which system is authoritative and how identity attributes or assertions cross the trust boundary. | Unknown / not provided |
-| Governance | Review access, privileged assignments, exceptions, and dormant identities. | Unknown / not provided |
-| Monitoring | Collect and review identity, policy, provisioning, and resource access events. | Unknown / not provided |
+The notes do not describe joiner/mover/leaver automation. The verified scope is emergency administrator setup and Conditional Access policy design. Treat lifecycle automation, RBAC beyond the emergency Global Administrator assignment, device-based policy, and centralized logging as unknown unless additional artifacts are added.
 
 ## 4. Architecture Design
 
-### Diagram
+![Evidence-based view of the Microsoft Entra Conditional Access lab. Report-only/draft statuses and the unverified hybrid connection are explicit.](architecture.svg)
 
-![Proposed technology-neutral hybrid IAM reference architecture. It is an illustrative target design, not evidence of deployed components.](architecture.svg)
+Editable source: [architecture.mmd](architecture.mmd).
 
-Editable source: [architecture.mmd](architecture.mmd). The diagram uses generic roles rather than vendor-specific services because no products or configurations were supplied.
+### Components and data flow
 
-### Components and trust boundaries
+1. An administrator or user signs in to Microsoft Entra ID.
+2. The created MFA policy is evaluated in Report-only for the population and resources in its saved configuration. Report-only evaluation does not prompt users for MFA or enforce grant controls; outcomes can be reviewed in sign-in logs.
+3. The emergency-access group is intended to provide a controlled exclusion for policies that block or restrict sign-in. Microsoft notes that a Report-only policy does not require this exclusion.
+4. The legacy-auth policy draft selected Exchange ActiveSync clients and Other clients, but the screenshot shows no Block access grant and no creation confirmation.
+5. Security Defaults are disabled. The reviewed material does not show equivalent policies in an enforced state.
+6. No local directory or hybrid connector appears in the reviewed evidence. Add that path only after documenting the actual service, direction, and trust configuration.
 
-1. **People and lifecycle source:** a user or approved identity event initiates a change. An HR system is one possible source, but none was confirmed.
-2. **Provisioning and role governance:** an operator or workflow maps job function to scoped groups/roles, applies approval where needed, and records exceptions. This is recommended design behavior.
-3. **Local identity domain:** a directory may serve on-premises resources if the real lab includes one. Its product, authority, and configuration are unknown.
-4. **Identity bridge:** a controlled synchronization and/or federation mechanism crosses the local/cloud boundary. Direction, attributes, protocol, service account, and failure behavior must be documented from the actual build.
-5. **Cloud identity and policy:** the identity provider authenticates the subject and evaluates applicable factors and access policy. The identity provider, MFA method, and policy behavior are unknown.
-6. **Resources:** cloud and local applications enforce their own role/group permissions after the identity decision. A successful sign-in alone does not prove resource authorization is correctly scoped.
-7. **Audit and monitoring:** identity, bridge, policy, and resource events are collected for investigation and access review. No logging platform or retention setting was confirmed.
+### Trust boundaries and limitations
 
-### Reference data flow
-
-1. An approved joiner, mover, leaver, or privileged-access event is recorded.
-2. Provisioning updates the authoritative identity and its scoped access assignments.
-3. If hybrid synchronization or federation is in scope, the identity bridge exchanges only the attributes or assertions required by the design.
-4. A user requests a resource; authentication and applicable policy are evaluated before a session is granted.
-5. The target resource evaluates its own authorization rules and returns only the allowed operations.
-6. Relevant changes, sign-ins, policy decisions, and resource activity are logged and reviewed.
-
-These steps describe the reference model. Confirm actual directionality, protocols, and enforcement points from the implemented configuration before presenting them as project facts.
-
-### Security boundaries
-
-- **Identity administration boundary:** only authorized administrators should change identity sources, mappings, policy, or privileged assignments.
-- **Local/cloud trust boundary:** synchronization or federation credentials, certificates, and endpoints need explicit ownership, least privilege, rotation, and failure handling.
-- **Authentication/authorization boundary:** successful authentication is distinct from approval to use a specific resource.
-- **Evidence boundary:** screenshots and exported logs should be sanitized; never publish passwords, tokens, recovery codes, personal data, tenant secrets, or reusable identifiers.
+- Emergency-access credentials and methods must be controlled separately from ordinary administrator identities.
+- Exclusions are high-impact policy exceptions; restrict membership changes and monitor their use.
+- Report-only is an evaluation state, not an enforcement state.
+- The tenant screenshots include identifiers. Original captures stay in the private vault; redact them before any external sharing.
 
 ## 5. Implementation Walkthrough
 
-The available materials did not include a build log, so the following is a **recommended walkthrough structure**, not a claim that these steps were completed. Replace each bracket with the observed product and action.
+This walkthrough separates recorded actions from unverified or incomplete steps.
 
-1. **Plan the scope.** Record lab purpose, in-scope identities and resources, success criteria, and whether the environment is simulated. Document the threat assumptions and what the lab does not cover.
-2. **Prepare the environment.** Identify the local directory (if any), identity provider, test users, test resources, network/DNS prerequisites, licensing constraints, and rollback path. Keep secrets out of source control.
-3. **Define identity ownership.** Record which system owns each attribute and which system can create, update, disable, or delete an identity. Decide how conflicts and sync failures are handled.
-4. **Configure the identity bridge.** Document the actual sync/federation method, source/target scope, attribute mappings, service identity privileges, credential handling, and monitoring. Capture sanitized evidence.
-5. **Design groups and roles.** Create role names tied to job function and resource permissions. Separate everyday accounts from privileged administration where supported. Record owners and review cadence.
-6. **Provision test identities.** Use non-production test accounts. Demonstrate the intended joiner and mover flows and verify both grants and removals at the target resource.
-7. **Configure authentication controls.** Record which users/resources require MFA or other factors, the exception path, recovery process, and how administrators are protected. Test an allowed and a denied case.
-8. **Configure access policy.** Document the exact conditions and outcomes for each policy. Avoid broad exclusions; make emergency access narrow, monitored, and tested.
-9. **Enable audit evidence.** Identify the event sources, destination, retention, access to logs, and alert or review process. Verify events arrive and contain enough context for investigation.
-10. **Validate and document.** Run the test cases in [Testing and Validation](#9-testing-and-validation), record actual output and date, and include sanitized screenshots with captions.
-11. **Review and clean up.** Remove temporary grants and test accounts, rotate lab credentials if needed, capture final configuration, and list known limitations and next steps.
+### 5.1 Emergency access accounts
 
-**Evidence status for each step:** unknown / not provided. The Evidence Register lists the exact artifacts that would make this walkthrough specific to the built lab.
+The note instructs creating two accounts in the tenant’s `onmicrosoft.com` domain, assigning Global Administrator, using a strong authentication method, storing recovery material securely, and validating sign-in. The screenshot confirms one account has a direct, active, permanent Global Administrator assignment. It does not show the second account, the full UPN/domain, authentication-method registration, credential storage, or a successful validation sign-in.
+
+Microsoft’s current guidance calls for two or more cloud-only emergency accounts, a phishing-resistant method such as FIDO2 passkeys or certificate-based authentication, permanent active Global Administrator assignment, sign-in monitoring, and regular validation. Confirm which of these were completed in the lab before claiming them.
+
+### 5.2 Security Defaults
+
+The screenshot shows **Security Defaults: Disabled**. The note records disabling defaults while moving to custom Conditional Access. Microsoft advises enabling replacement Conditional Access policies immediately after disabling defaults. The reviewed evidence shows the MFA policy is Report-only and the legacy-auth policy is only a draft, so an equivalent enforced baseline is not demonstrated here. Verify the full tenant policy list and license before deciding whether to restore Security Defaults or complete a Conditional Access rollout.
+
+### 5.3 Emergency exclusion group
+
+The note creates `CA-Exclude-EmergencyAccess` as a Security group with Assigned membership. The creation form showed two members selected and the group list later showed the group exists. The final member list was not opened in the capture, so confirm the two members and ensure no other identities are included.
+
+### 5.4 CA-01 — Require MFA
+
+The screenshots show a policy named `CA-01-Require-MFA-Admins` created successfully and listed in **Report-only**. The configuration capture shows All resources and a Require multifactor authentication grant. A user-assignment screen shows all users included with exclusions, while the written steps call for selecting administrative directory roles. The final saved inclusion/exclusion list should be inspected and reconciled with the policy name and intended scope.
+
+Report-only policies evaluate applicable sign-ins but do not enforce the MFA grant or prompt users. Review the Report-only results in sign-in logs, verify the policy applies to intended accounts, then stage and enable only after testing.
+
+### 5.5 CA-02 — Block legacy authentication
+
+The Obsidian note previously described this as implemented. The available screenshot shows a **New Conditional Access policy** form named `CA-02 — Block Legacy Authentication`. Exchange ActiveSync clients and Other clients are selected, policy state is Report-only, Grant shows zero controls selected, and the Create button remains visible. This is evidence of a draft, not a created or enforcing block policy.
+
+To complete the design, configure Block access as the grant control, review the target and emergency-access exclusions, create in Report-only, inspect interactive and non-interactive legacy sign-in logs, and enable after impact review. Follow Microsoft’s current deployment guidance.
 
 ## 6. Screenshot Walkthrough
 
-No screenshots were available in the supplied workspace or repository. Therefore, there are no project screenshots to describe as observed evidence. Capture the following only if these screens exist in the actual build:
+The source screenshots remain embedded in the private Obsidian note. They are not copied into this public repository because they show tenant IDs, account/contact details, or directory object identifiers.
 
-| Suggested caption | Capture | Purpose and security point |
+| Source capture | What it supports | Caption and limit |
 |---|---|---|
-| **Figure 1 — Lab topology and identity boundaries** | Final topology view with local/cloud boundary, trust flow, and system names. | Lets a reviewer understand where identity is authoritative and where policy is enforced. Label any proposed or simulated elements. |
-| **Figure 2 — Identity bridge configuration** | Sanitized connector/sync/federation settings and scope. | Shows configured direction and scope. Redact tenant IDs, domains if sensitive, certificates, secrets, and personal identifiers. |
-| **Figure 3 — Role and group model** | Role/group names and permission scope, with test identities anonymized. | Shows how access is assigned and whether privileges are separated. Avoid exposing real users. |
-| **Figure 4 — Authentication policy** | Policy conditions, target population, MFA requirement, and exclusions. | Makes enforcement and exceptions reviewable. Do not show recovery codes or secrets. |
-| **Figure 5 — Joiner/mover/leaver validation** | Before/after membership or account state for a test identity. | Demonstrates lifecycle change and access removal. Include timestamps and expected/actual result. |
-| **Figure 6 — Audit event** | Sanitized sign-in, policy, provisioning, or admin event. | Demonstrates that the control creates reviewable evidence. Redact IPs and identifiers as appropriate. |
-
-Use consistent figure numbering and provide a one-sentence caption, the test identity label, capture date, and what the screenshot proves. A configuration screen shows intent; a separate test result is needed to show behavior.
+| `Pasted image 20261026222003.png` | One emergency-access account has a direct, active, permanent Global Administrator assignment. | **Figure 1 — Emergency administrator role assignment.** This proves the visible role assignment only; it does not prove two accounts, authentication-method setup, or a successful emergency sign-in. |
+| `Pasted image 20261026222531.png` | Security Defaults displayed as Disabled. | **Figure 2 — Security Defaults state.** This is a captured tenant state; no complete replacement baseline is visible in the reviewed material. |
+| `Pasted image 20261026223419.png` | New group named `CA-Exclude-EmergencyAccess`, type Security, membership Assigned, two members selected. | **Figure 3 — Emergency exclusion group setup.** Selection during creation is visible; verify the final saved roster. |
+| `Pasted image 20261026223437.png` | The group appears in the group list as Security / Assigned. | **Figure 4 — Emergency exclusion group created.** The object identifier is intentionally omitted; the capture does not expand group members. |
+| `Pasted image 20261026224533.png` and `Pasted image 20261026224710.png` | CA-01 setup, all-resources target, MFA grant, Report-only state, and current-user lockout warning. | **Figure 5 — MFA policy configuration.** The “Admins” name conflicts with the all-users inclusion shown in the captured assignment. Confirm the final saved scope and exclusions. |
+| `Pasted image 20261026224742.png` | Creation confirmation and policy list showing CA-01 in Report-only. | **Figure 6 — MFA policy created in Report-only.** A created policy is not proof of enforcement or successful sign-in behavior. |
+| `Pasted image 20261026230829.png` | CA-02 draft selects Exchange ActiveSync and Other clients; Report-only; zero grant controls; Create still available. | **Figure 7 — Legacy-authentication policy draft.** The screenshot does not show Block access or policy creation. |
 
 ## 7. Security Analysis
 
-The analysis below describes recommended controls and their evidence needs. It does not assert that the lab implemented them.
+| Area | Finding from the notes/screenshots | Risk / next action |
+|---|---|---|
+| Least privilege / RBAC | One emergency account has permanent Global Administrator, an expected emergency-account pattern; ordinary admin roles are not documented. | Keep the privileged assignment limited to dedicated emergency accounts. Confirm the second account and ordinary administrator role model. |
+| Emergency access | Two accounts are the intended design; evidence shows one role assignment and a group creation form with two members selected. Authentication methods and recovery testing are not evidenced. | Verify two cloud-only accounts, phishing-resistant methods with dependencies understood, secure storage, monitoring, and periodic tests. |
+| MFA | CA-01 has an MFA grant but is Report-only. | Users are not prompted by this policy. Review sign-in impact, resolve scope mismatch, then roll out enforcement. |
+| Conditional Access scope | Policy name says Admins; captured inclusion summary says All users. Current-user exclusion warning appears during setup. | Inspect saved assignments and exclusions; align actual scope, policy name, and documented intent. |
+| Legacy authentication | CA-02 screenshot is a draft without a Block access grant or creation confirmation. | Finish the policy, analyze existing legacy sign-ins, test impact, then enable. |
+| Security Defaults | Disabled in the screenshot. | Verify an equivalent enforced baseline immediately. If Conditional Access licensing/configuration is unavailable, assess restoring Security Defaults. |
+| Identity governance | Assigned group is appropriate for manual exception control, but final membership and change ownership are not shown. | Verify exact members; restrict and monitor membership changes; review exclusions periodically. |
+| Audit and monitoring | No sign-in logs, alert configuration, retention, or review evidence supplied. | Capture report-only outcomes and emergency-account sign-ins; define who reviews and responds. |
+| Hybrid integration | No AD DS, Entra Connect/Cloud Sync, or federation evidence in the reviewed notes. | Add the actual hybrid directory flow before describing the implementation as a verified hybrid architecture. |
 
-| Control area | Target practice | Status from available evidence | Evidence needed |
-|---|---|---|---|
-| Least privilege | Scope roles to the minimum resource actions; avoid broad nested groups and standing admin rights. | Unknown | Permission matrix, group membership, and denied-access test. |
-| RBAC | Use named roles/groups with an owner, purpose, scope, and review cadence. | Unknown | Role catalog and representative assignment review. |
-| MFA and authentication | Select factors and recovery controls for the account/resource risk; test exceptions and recovery paths. | Unknown | Sanitized policy, factor configuration, positive/negative sign-in evidence. |
-| Conditional access | If supported, evaluate relevant user, device, application, and risk signals; keep exclusions narrow and reviewed. | Unknown | Policy export, scenario tests, exception owner and expiry. |
-| Identity governance | Define approval, periodic access review, leaver cleanup, and exception expiry. | Unknown | Runbook, review record, and lifecycle test. |
-| Privileged access | Separate administrative identities/roles where feasible, limit duration, and log elevation/actions. | Unknown | Privileged role inventory, elevation workflow, admin event samples. |
-| Audit and monitoring | Collect identity, bridge, policy, and resource events; protect and review the records. | Unknown | Event samples, retention configuration, monitoring/review procedure. |
-| Recovery and resilience | Document bridge outage, identity-provider outage, emergency access, and restoration procedures. | Unknown | Failure-mode test record and approved recovery runbook. |
-
-NIST SP 800-207 emphasizes protecting resources and evaluating access rather than relying on network location alone. NIST SP 800-63-4 provides current guidance on digital identity, authentication, and federation. Use these as design references; do not label the lab “compliant” without a scoped assessment and supporting evidence.
+**Priority finding:** the captured Security Defaults state is Disabled, while the visible MFA policy is Report-only and the legacy-auth policy is unfinished. This evidence does not show an enforced replacement baseline. Microsoft recommends enabling replacement Conditional Access policies immediately when disabling Security Defaults. Confirm the full tenant state rather than assuming these are the only policies.
 
 ## 8. Challenges and Resolutions
 
-No project notes, error logs, or troubleshooting history were supplied. Specific problems and fixes cannot be attributed to this lab without evidence.
+No operational incidents or troubleshooting logs were supplied. The review did identify documentation/configuration discrepancies and corrected how they are represented:
 
-For each real issue, document: **symptom → impact → root cause → diagnostic evidence → resolution → retest → lesson learned**. Useful hybrid IAM troubleshooting topics, if encountered, include:
-
-- stale or conflicting identity attributes;
-- synchronization scope or duplicate identity behavior;
-- DNS, time, certificate, or connectivity problems across the trust boundary;
-- a policy exclusion that unintentionally bypasses a control;
-- a role/group mapping that grants access too broadly or blocks an expected user;
-- missing audit events or insufficient context for a sign-in decision.
-
-These are investigation prompts, not reported project challenges. Add only issues that occurred and evidence the actual resolution.
+- **MFA policy scope mismatch:** the written instruction says admin directory roles; the screenshot shows all users included. Resolution: preserve both facts and require checking the saved assignment before enforcement.
+- **Legacy-auth claim exceeds evidence:** the note called the policy implemented; the screenshot shows an uncreated draft with no Block access grant. Resolution: relabel it as incomplete and provide the correct completion/validation sequence.
+- **Security Defaults transition gap:** the screenshot shows defaults disabled, but no equivalent enforced controls are evidenced. Resolution: call out the risk and require a baseline verification before reporting protection.
+- **“Hybrid” architecture lacks connector evidence:** the note shows Entra policy configuration only. Resolution: mark the local directory/sync/federation path unverified rather than inventing it.
 
 ## 9. Testing and Validation
 
-No test results were provided. The matrix below is a proposed baseline. **Actual result is “Not provided” for every scenario**; do not present an expected result as a pass.
+The supplied screenshots show configuration states, not end-to-end sign-in results. No actual test outcomes were provided.
 
-| ID | Scenario | Expected result | Actual result / status |
-|---|---|---|---|
-| T-01 | Joiner receives only the role/group access approved for the test job. | Identity is provisioned and can access the intended resource; unrelated resource access is denied. | Not provided — not verified |
-| T-02 | Mover changes role. | Old access is removed and only new approved access remains. | Not provided — not verified |
-| T-03 | Leaver is disabled or removed. | Authentication and resource access are blocked; applicable sessions/tokens are revoked or expire according to documented behavior. | Not provided — not verified |
-| T-04 | Standard user signs in under the required authentication policy. | Required factor is enforced; sign-in and policy decision are logged. | Not provided — not verified |
-| T-05 | Privileged action is attempted by a standard user. | Request is denied and recorded. | Not provided — not verified |
-| T-06 | Authorized administrator performs a scoped action. | Access is granted only for the intended action; actor and activity are auditable. | Not provided — not verified |
-| T-07 | Sync/federation or policy dependency is unavailable. | Failure behavior matches the documented safe design and creates an operational signal. | Not provided — not verified |
-| T-08 | Identity uses an unsupported device/context, if device policy is in scope. | Access follows the defined policy outcome and the reason is observable. | Not provided — not verified |
+| Test | Expected result | Evidence status |
+|---|---|---|
+| Emergency account inventory | Two cloud-only accounts exist; each has the intended permanent role and phishing-resistant authentication method. | Partial: one permanent GA assignment screenshot; remaining checks not provided. |
+| Emergency sign-in drill | Each account can sign in and perform an emergency administrative task; every use is logged and reviewed. | Not provided. |
+| CA-01 report-only evaluation | Intended accounts/resources produce the expected Report-only MFA result in sign-in logs. | Policy creation/state shown; sign-in results not provided. |
+| CA-01 enforced MFA | User receives MFA challenge when the policy applies. | Not tested/evidenced; policy is Report-only. |
+| Emergency exclusion | Dedicated emergency accounts remain usable under enforced sign-in restrictions, and no other users are unintentionally excluded. | Group created; final roster and sign-in tests not provided. |
+| CA-02 legacy authentication | Legacy client sign-ins are evaluated in Report-only and blocked after enforcement, while modern clients continue. | Draft only; no grant control, no creation proof, no sign-in results. |
+| Baseline after Security Defaults disabled | MFA and legacy-auth protections are enforced by verified replacement policies. | Not evidenced in the reviewed material. |
+| Hybrid sync/federation | Identity changes flow across the documented trust boundary and failure behavior is understood. | Not evidenced. |
 
-For each run, record date/time and timezone, test identity label, preconditions, exact policy/resource, expected result, actual result, log/event reference, screenshot path, and pass/fail. Use synthetic accounts and sanitize evidence. A lab test validates only the tested configuration and scenarios; it does not prove production readiness.
+For each future test, record the date, test identity, client type, target resource, policy result, actual outcome, and correlated sign-in event. Sanitize identifiers before external sharing.
 
 ## 10. Project Outcomes
 
-### Confirmed outcome of this review
+### Verified outcomes
 
-- The public GitHub repository was found, but its contents endpoint reported that the repository is empty.
-- The named Obsidian folder, implementation files, screenshots, and test reports were not available in the supplied workspace.
-- This documentation package now provides a case-study structure, evidence register, technology-neutral reference diagram, validation plan, and recruiter/interview templates.
+- Created the `CA-Exclude-EmergencyAccess` Security group with Assigned membership; two members were selected in the creation form.
+- Created an MFA Conditional Access policy and left it in Report-only.
+- Captured one emergency account with a direct, active, permanent Global Administrator assignment.
+- Captured Security Defaults as Disabled.
+- Started configuring a legacy-authentication policy; completion and enforcement are not evidenced.
 
-### Outcomes of the IAM implementation
+### Not established
 
-Unknown. No measured security improvement, operational saving, user count, provisioning time, test pass rate, or deployed control could be established. Do not add numerical impact without source records.
+No user count, enforcement rate, blocked sign-ins, reduced attack rate, time savings, successful emergency test, or hybrid synchronization outcome was supplied. Do not claim measurable security improvement from the current evidence.
 
-### Scalability considerations for a future revision
+### Next improvements
 
-- Make identity ownership and attribute mappings explicit before adding more directories or applications.
-- Automate repeatable provisioning only after lifecycle rules and failure handling are understood.
-- Review group nesting, privileged assignments, and policy exceptions as scope grows.
-- Centralize audit events and define retention, ownership, and response actions.
-- Add failure and recovery tests for the identity bridge and authentication dependencies.
-
-### Prioritized next improvements
-
-1. Add a minimal repository README and sanitized architecture/configuration artifacts.
-2. Record the actual products, versions, protocols, identity source, and trust direction.
-3. Capture joiner/mover/leaver and allowed/denied access test evidence.
-4. Add a screenshot set with captions and safe redactions.
-5. Record limitations and any measured outcomes supported by logs or before/after data.
+1. Confirm tenant licensing and choose an active baseline: Security Defaults or a complete Conditional Access replacement.
+2. Reconcile CA-01’s name, intended admin-only scope, captured all-users inclusion, and final exclusions.
+3. Complete CA-02 with Block access; review interactive and non-interactive legacy sign-ins in Report-only before enablement.
+4. Verify both emergency accounts, methods, secure storage, monitoring, and regular sign-in drills.
+5. Add evidence of the local directory/hybrid integration if one exists; otherwise rename the project presentation to reflect the Entra Conditional Access lab accurately.
+6. Add sanitized sign-in test evidence and a troubleshooting record.
 
 ## 11. Recruiter-Friendly Project Summary
 
-**Short version:** The owner describes the Hybrid IAM Security Lab as a completed identity and access management project focused on hybrid identity. The public repository was empty during this review, so the specific tools, controls, and results are not yet evidenced in the available portfolio material.
+**What I built:** A Microsoft Entra Conditional Access lab with an emergency-access exclusion group and an all-resources MFA policy in Report-only; I also drafted a legacy-authentication policy.
 
-**Skills the project can demonstrate once backed by artifacts:** identity lifecycle design, directory and identity-provider integration, role/group-based authorization, MFA and access policy, privileged access handling, audit analysis, troubleshooting, and security test planning. Only list the skills that match the actual build and can be explained with evidence.
+**Security concepts demonstrated:** emergency access, Global Administrator protection, group-based Conditional Access exclusions, MFA policy design, Report-only evaluation, and legacy-authentication control planning.
 
-**Why this can matter for IAM / security roles:** a well-documented lab can show how an engineer connects identity decisions to resource access, handles joiner/mover/leaver changes, limits administrative privilege, and verifies both allowed and denied outcomes. The current evidence does not establish which of these were implemented.
+**What the evidence says:** the MFA policy is not enforced; the legacy-auth policy is not shown as created; Security Defaults are disabled; and an on-premises hybrid identity connection is not evidenced. This is a configuration lab with clear next steps, not proof of production-ready or compliant IAM.
+
+**Skills demonstrated:** Microsoft Entra administration, Conditional Access configuration, evidence review, access-control scoping, security-gap identification, and technical documentation.
 
 ## 12. Resume Version
 
-Use the editable entry in [Resume and Interview Preparation](Resume-and-Interview-Preparation.md) after filling in the bracketed values from the actual environment. Do not list products, MFA, Conditional Access, RBAC, automated provisioning, production readiness, compliance, or impact metrics unless the project artifacts support them.
+**Microsoft Entra Conditional Access Lab — Hybrid IAM Security Lab** | 2026
 
-**Safe drafting template:**
+- Created a Microsoft Entra emergency-access Security group with Assigned membership and configured an all-resources MFA Conditional Access policy in Report-only for impact analysis.
+- Documented an emergency Global Administrator account and identified validation requirements for account redundancy, phishing-resistant authentication, monitoring, and recovery testing.
+- Assessed policy evidence and identified deployment gaps: Security Defaults disabled, MFA policy not enforced, legacy-authentication block unfinished, and hybrid directory integration not evidenced.
 
-> **Hybrid IAM Security Lab — Portfolio Project** | [Month Year]
-> - Built a lab using **[confirmed identity provider]** and **[confirmed directory/resources]** to demonstrate **[specific verified identity lifecycle or access-control capability]**.
-> - Configured **[specific verified control]** and validated it with **[test scenario]**, recording **[actual outcome and evidence location]**.
-> - Documented **[confirmed architecture / troubleshooting / audit work]** and identified **[specific limitation or next improvement]**.
-
-If the evidence remains unavailable, keep this as a draft rather than placing unverified technologies or outcomes on a resume.
+Only retain these bullets if the linked screenshots and note remain available to substantiate them. Do not claim that MFA or legacy authentication was enforced or that the lab includes on-premises synchronization until evidence is added.
 
 ## 13. Interview Preparation
 
-Use the prompts and answer frameworks in [Resume and Interview Preparation](Resume-and-Interview-Preparation.md). Be ready to show the architecture, one real configuration, one denied-access test, and one limitation. If an item was not built, say so and explain how you would implement and validate it; a clear boundary between implemented and planned work is stronger than an unsupported claim.
+Use [Resume and Interview Preparation](Resume-and-Interview-Preparation.md) for suggested answers. The strongest demonstration is to show the saved policy states, explain why Report-only is not enforcement, describe the mismatch between policy name and scope, and lay out the safe completion plan for legacy-auth blocking.
 
-## References and Further Reading
+## References
 
-- [NIST SP 800-63B-4 — Authentication and Authenticator Management](https://csrc.nist.gov/pubs/sp/800/63/b/4/final) — current authentication guidance within the NIST SP 800-63 Revision 4 suite.
-- [NIST SP 800-63-4 — Digital Identity Guidelines](https://www.nist.gov/publications/nist-sp-800-63-4-digital-identity-guidelines) — identity proofing, authentication, and federation guidance.
-- [NIST SP 800-207 — Zero Trust Architecture](https://csrc.nist.gov/pubs/sp/800/207/final) — resource-focused zero-trust architecture principles.
+- [Microsoft: Manage emergency access accounts in Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/security-emergency-access) — two or more cloud-only accounts, strong authentication, role assignment, exclusions for policies that block/restrict sign-in, monitoring, and regular validation.
+- [Microsoft: Security defaults in Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/fundamentals/security-defaults) — baseline protections, when to use Conditional Access, and transition guidance.
+- [Microsoft: Analyze Conditional Access policy impact](https://learn.microsoft.com/en-us/entra/identity/conditional-access/concept-conditional-access-report-only) — Report-only evaluates and logs but does not enforce grant/session controls.
+- [Microsoft: Block legacy authentication with Conditional Access](https://learn.microsoft.com/en-us/entra/identity/conditional-access/policy-block-legacy-authentication) — policy scope, client-app condition, Block access grant, Report-only rollout, and sign-in-log review.
 
-These references inform the recommendations in this document. They do not demonstrate that the lab implemented a control or meets a standard.
+Recommendations above are based on these Microsoft references and are not claims that the lab completed those controls.
 

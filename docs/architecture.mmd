@@ -1,40 +1,22 @@
 flowchart LR
-  %% PROPOSED / ILLUSTRATIVE ONLY — replace with verified lab components.
-  subgraph People[People and lifecycle]
-    User[User or administrator]
-    Event[Approved joiner / mover / leaver event]
-    Gov[Provisioning and role governance]
+  User[User / administrator sign-in]
+
+  subgraph Entra[Microsoft Entra ID tenant — evidenced lab scope]
+    Defaults[Security Defaults<br/>Disabled in capture]
+    Emergency[Emergency access<br/>Two intended; one permanent GA assignment captured]
+    Group[CA-Exclude-EmergencyAccess<br/>Security · Assigned<br/>Two members selected; verify final roster]
+    MFA[CA-01 Require MFA<br/>Created · All resources · MFA grant<br/>Report-only · name/scope mismatch]
+    Legacy[CA-02 Block Legacy Authentication<br/>Draft only · legacy clients selected<br/>No grant control / no creation confirmation]
+    Logs[Sign-in logs<br/>No test outcomes supplied]
+
+    User --> MFA
+    Emergency --> Group
+    Group -. intended exclusion .-> MFA
+    MFA -. report-only evaluation .-> Logs
+    Legacy -. no blocking effect evidenced .-> Logs
+    Defaults -. no enforced replacement shown .-> MFA
   end
 
-  subgraph Local[Local environment, if in scope]
-    Dir[Authoritative or local directory]
-    LocalApp[On-premises resource]
-  end
-
-  Bridge[Identity bridge<br/>sync and/or federation]
-
-  subgraph Cloud[Cloud identity and access]
-    IdP[Cloud identity provider]
-    Policy[Authentication and access policy<br/>factor + context + risk]
-    CloudApp[Cloud application / resource]
-  end
-
-  Logs[Central audit and monitoring]
-
-  Event --> Gov
-  Gov --> Dir
-  Dir <-->|Scoped attributes / assertions| Bridge
-  Bridge <-->|Identity / federation data| IdP
-  User -->|Sign-in request| IdP
-  IdP --> Policy
-  Policy -->|Allowed session / assertion| CloudApp
-  Dir -->|Directory authentication / authorization| LocalApp
-  Gov -.->|Provisioning and admin events| Logs
-  Dir -.->|Identity changes and access events| Logs
-  Bridge -.->|Sync / federation events| Logs
-  IdP -.->|Sign-in and policy decisions| Logs
-  CloudApp -.->|Resource activity| Logs
-
-  classDef recommended fill:#f4f6f8,stroke:#475569,color:#111827;
-  class User,Event,Gov,Dir,LocalApp,Bridge,IdP,Policy,CloudApp,Logs recommended;
+  Hybrid[On-prem directory / Entra Connect or Cloud Sync / federation<br/>Not shown in reviewed notes]
+  Hybrid -. add only when verified .-> Entra
 

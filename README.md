@@ -1,29 +1,26 @@
-# Hybrid IAM Security Lab
+# Hybrid IAM Security Lab — Microsoft Entra Conditional Access
 
-Recruiter-facing documentation package for the **Hybrid IAM Security Lab** portfolio project.
+This package is based on the project note in the Obsidian vault, its linked `IAM groups` and `Block legacy authentication` notes, and the screenshots embedded in the note. It replaces the earlier technology-neutral draft with evidence from the actual lab.
 
-> **Evidence status — reviewed 2026-10-28:** At the start of this review, the linked public repository had no branches, commits, or files (its metadata named `main` as the default branch). This package supplies the initial documentation content. The supplied Obsidian path and project screenshots/configurations were not present in the available workspace. The owner described the project as completed in the source brief; implementation details therefore remain unverified. This package marks design guidance separately from confirmed evidence.
+> [!warning] Current-state finding
+> The screenshots show Microsoft Entra Security Defaults **Disabled** and the `CA-01-Require-MFA-Admins` policy in **Report-only**. The legacy-authentication policy screenshot is still a new-policy draft with no grant control selected. The available evidence therefore does not show an enforced MFA or legacy-authentication block baseline. Verify the tenant’s complete policy state before treating it as protected.
 
 ## Start here
 
-- [Case study](docs/IAM-Security-Lab-Case-Study.md) — all 13 requested sections, with verified facts, unknowns, and recommendations distinguished.
-- [Architecture diagram (SVG)](docs/architecture.svg) — polished vector diagram of a **proposed logical reference design**, not a diagram of a verified deployment.
-- [Architecture source (Mermaid)](docs/architecture.mmd) — editable diagram source.
-- [Evidence register](docs/Evidence-Register.md) — source review, confidence rules, and an evidence capture checklist.
-- [Resume and interview prep](docs/Resume-and-Interview-Preparation.md) — fill-in resume entry and interview prompts that avoid unsupported claims.
+- [Case study](docs/IAM-Security-Lab-Case-Study.md) — 13 requested sections grounded in the Obsidian notes and screenshots.
+- [Evidence-based Entra access model](docs/architecture.svg) — current findings and evidence gaps; [editable Mermaid source](docs/architecture.mmd).
+- [Evidence register](docs/Evidence-Register.md) — captures reviewed, what each supports, and unresolved claims.
+- [Resume and interview guide](docs/Resume-and-Interview-Preparation.md) — truthful project summary and interview answers.
 
-## Source project
+## Privacy note
 
-[Aymen07171/Hybrid-IAM-Security-Lab](https://github.com/Aymen07171/Hybrid-IAM-Security-Lab)
+The original vault screenshots contain tenant identifiers, account/contact details, and an object ID. They remain in the private vault and are not copied into this public repository. The walkthrough describes what they show without reproducing those values.
 
-The Markdown/SVG files are directly usable in this repository and can also be copied into the Obsidian vault path `03 - Learning Hubs/Cybersecurity/IAM Project`. The vault itself was not available in this workspace, so it was not edited directly.
+## Source notes
 
-## Evidence labels
+- Vault note: `03 - Learning Hubs/Cybersecurity/IAM Project.md`
+- Linked notes: `IAM groups.md` and `Block legacy authentication.md`
+- Project repository: [Aymen07171/Hybrid-IAM-Security-Lab](https://github.com/Aymen07171/Hybrid-IAM-Security-Lab)
 
-- **Confirmed** — directly observed in an accessible source during this review.
-- **Owner-reported** — stated by the project owner, but not independently verified here.
-- **Recommended / illustrative** — a target design, control, or test to consider; not evidence that it exists in the lab.
-- **Unknown / not provided** — evidence was unavailable, so no implementation claim is made.
-
-Before using the resume text or presenting implementation details, replace bracketed fields with verified platform names, configuration evidence, and test results. Do not claim compliance or production deployment based on this lab package.
+The notes/screenshots substantiate an Entra Conditional Access lab. They do not show an on-premises directory, Entra Connect/Cloud Sync, or federation. The “hybrid” integration remains to be evidenced before describing this as a verified hybrid deployment.
 

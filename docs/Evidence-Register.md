@@ -4,63 +4,62 @@ project: Hybrid IAM Security Lab
 reviewed: 2026-10-28
 tags:
   - iam
+  - microsoft-entra
   - evidence
-  - portfolio
 ---
 
 # Evidence Register
 
-## Scope and source review
+## Source material reviewed
 
-Review date: **2026-10-28**.
-
-| Source | Observation | Classification |
+| Source | Observed evidence | Classification |
 |---|---|---|
-| User-provided project brief | Names the project as an IAM project and supplies the repository URL and Obsidian path. The brief describes the project as completed. | Owner-reported context |
-| [GitHub repository](https://github.com/Aymen07171/Hybrid-IAM-Security-Lab) metadata | Repository is public; metadata names `main` as the default branch; repository size is 0. | Confirmed at review time |
-| GitHub branch, commit, and contents endpoints | Branch listing returned an empty array; commit listing returned “Git Repository is empty”; root contents returned “This repository is empty.” | Confirmed at review time |
-| Available local workspace | No project configuration, screenshots, notes, or test records were present. | Confirmed within the supplied workspace |
-| Obsidian target path `03 - Learning Hubs/Cybersecurity/IAM Project` | No matching folder or IAM note was located in the available workspace/document search. The actual vault was not mounted here. | Not available for review |
+| Obsidian note `03 - Learning Hubs/Cybersecurity/IAM Project.md` | Steps for two emergency accounts; Security Defaults note; emergency group setup; CA-01 MFA instructions; a statement that legacy authentication is implemented. | Owner-maintained project notes; statements checked against screenshots. |
+| Linked `IAM groups.md` | Group type and membership notes; intended emergency exclusion-group use. | Owner-maintained reference note. |
+| Linked `Block legacy authentication.md` | Definition of legacy authentication. | Owner-maintained reference note. |
+| `Pasted image 20261026222003.png` | One emergency account shown with direct, active, permanent Global Administrator assignment. | Screenshot evidence; identifiers omitted from this public register. |
+| `Pasted image 20261026222531.png` | Security Defaults setting shown as Disabled. | Screenshot evidence. |
+| `Pasted image 20261026223419.png` | New Security group `CA-Exclude-EmergencyAccess`; Assigned membership; two members selected; no owners selected. | Screenshot evidence at creation. |
+| `Pasted image 20261026223437.png` | Group appears in list as Security / Assigned. | Screenshot evidence of group existence; member roster not expanded. |
+| `Pasted image 20261026224533.png`, `...224710.png`, `...224742.png` | CA-01 setup uses All resources and MFA grant; created policy list shows Report-only. Assignment summary appears to include all users despite the “Admins” name and written admin-role instruction. | Screenshot evidence; final saved scope should be verified. |
+| `Pasted image 20261026230829.png` | New CA-02 form; Exchange ActiveSync and Other clients selected; Report-only; zero grant controls; Create button visible. | Screenshot evidence of a draft only, not creation or enforcement. |
+| Sign-in logs, policy impact, successful account tests, directory sync configuration | Not supplied. | Unknown / not evidenced. |
 
-The GitHub source can change after this date. Re-check the repository before publishing the case study. This register describes the evidence accessible during this review, not the owner's full environment.
+Original screenshots remain in the private Obsidian vault. They contain tenant identifiers, account/contact details, or a directory object identifier; they were not copied into this public repository.
 
 ## Claim ledger
 
-| Claim | Status | What would substantiate it |
+| Claim | Status | Evidence limit / follow-up |
 |---|---|---|
-| A project named Hybrid IAM Security Lab exists as an owner-described portfolio project. | Owner-reported | Project README or lab notes. |
-| The public GitHub repository exists. | Confirmed | Repository page/metadata. |
-| The repository had no files or commits at review time. | Confirmed | Repository metadata and root contents response. |
-| The lab uses a specific cloud identity provider, local directory, or synchronization tool. | Unknown | Sanitized configuration, topology, or setup notes. |
-| MFA, conditional access, RBAC, lifecycle automation, or monitoring is configured. | Unknown | Policy/configuration evidence plus a behavior test. |
-| The lab passed access-control or security tests. | Unknown | Dated expected/actual test records and correlated logs. |
-| The lab improved security or saved time by a measurable amount. | Unknown | Credible baseline and after measurement or direct measurement records. |
-| The reference architecture diagram describes the built environment. | False | The diagram is explicitly illustrative until replaced with the verified topology. |
+| Microsoft Entra ID is in scope. | Confirmed | Admin-center screenshots and policy forms. |
+| One emergency account has a direct, active, permanent Global Administrator assignment. | Confirmed | One screenshot only; no authentication method or sign-in proof. |
+| Two emergency accounts are fully configured. | Partially supported | Note describes two; group form shows two members selected. Only one GA role assignment is visible. Verify both identities, methods, and sign-ins. |
+| `CA-Exclude-EmergencyAccess` exists as a Security / Assigned group. | Confirmed | Group list; creation form showed two members selected. Final roster not shown. |
+| CA-01 requires MFA for administrators. | Inconsistent / needs verification | Name says Admins; setup screenshot says all users included. All resources and Require MFA are shown; created state is Report-only. Inspect saved assignments. |
+| CA-01 enforces MFA. | Not supported | Created policy is Report-only. Microsoft documents that Report-only evaluates/logs but does not enforce or prompt. |
+| Security Defaults are disabled. | Confirmed | Screenshot. No fully enforced replacement baseline is evidenced in the reviewed material. |
+| CA-02 blocks legacy authentication. | Not supported | Screenshot shows a new-policy form, Report-only, client types selected, zero grant controls, and Create still available. |
+| The lab includes on-premises directory integration or synchronization. | Not evidenced | No AD DS, Entra Connect/Cloud Sync, or federation setup shown. |
+| Sign-in tests passed or attack exposure decreased. | Not supported | No sign-in logs, test results, or measurements supplied. |
 
-## Confidence labels
+## Key security findings
 
-- **Confirmed:** visible directly in a source reviewed for this package.
-- **Owner-reported:** provided in the project brief but not independently confirmed.
-- **Recommended / illustrative:** proposed control, process, architecture, or test; not a deployment claim.
-- **Unknown / not provided:** the available evidence is insufficient to make the claim.
+1. **Baseline gap to verify:** Security Defaults are disabled, CA-01 is Report-only, and CA-02 is incomplete in the captured state. Check for other enforced policies; if none provide equivalent protection, restore Security Defaults or complete a licensed Conditional Access replacement immediately.
+2. **Scope mismatch:** CA-01’s display name and written steps say admins, while the captured assignment says all users. Confirm the saved policy and update either its scope or name before enforcement.
+3. **Legacy-auth policy incomplete:** selected client categories do not block access without the Block access grant control and policy creation.
+4. **Emergency access evidence partial:** confirm two cloud-only accounts, strong distinct phishing-resistant methods, access exclusions as needed, monitoring, and regular testing.
+5. **Hybrid connection absent from evidence:** obtain the actual directory and connector configuration before describing the deployment as hybrid.
 
-## Evidence request checklist
+## Evidence and privacy handling
 
-Collect sanitized artifacts in this order to turn the case study into an implementation record:
+- Keep the original Obsidian screenshots private; redact tenant IDs, UPNs/emails, object IDs, and other account details before publishing any image.
+- Pair a configuration screenshot with sign-in log evidence; a setup screen alone does not prove runtime behavior.
+- Record test date, identity label, client type, target resource, expected and actual policy result, and log reference.
 
-1. **Environment inventory:** product/service names and versions, local/cloud components, lab scope, and whether data/users are synthetic.
-2. **Architecture:** actual identity source, sync/federation direction and protocol, trust boundaries, target resources, and logging destinations.
-3. **Configuration:** role/group matrix, privileged access model, authentication/MFA policy, conditional rules/exclusions, lifecycle automation, and audit settings.
-4. **Behavior evidence:** joiner, mover, leaver, ordinary user, administrator, denied access, and one failure/recovery scenario.
-5. **Troubleshooting notes:** real symptom, root cause, diagnostic record, change made, and retest outcome.
-6. **Screenshots:** labeled figures with a short explanation of what each proves. Redact personal data, account identifiers, tenant IDs where appropriate, secrets, tokens, recovery codes, private keys, and reusable session material.
-7. **Outcomes:** only measured results with method, baseline, date range, and source. Do not infer numerical impact from the fact that a lab was completed.
+## Microsoft references
 
-## Screenshot handling standard
-
-- Use synthetic users and non-production test data.
-- Crop to the relevant configuration or event, while retaining enough context to identify the feature.
-- Remove secrets before capture where possible; do not rely on blur for credentials or tokens.
-- Add figure number, date, environment label, and a one-sentence statement of what is demonstrated.
-- Pair configuration screenshots with an observed test result; configuration alone does not prove enforcement.
+- [Emergency access accounts](https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/security-emergency-access)
+- [Security defaults](https://learn.microsoft.com/en-us/entra/fundamentals/security-defaults)
+- [Conditional Access Report-only impact](https://learn.microsoft.com/en-us/entra/identity/conditional-access/concept-conditional-access-report-only)
+- [Block legacy authentication](https://learn.microsoft.com/en-us/entra/identity/conditional-access/policy-block-legacy-authentication)
 
